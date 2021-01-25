@@ -15,7 +15,7 @@ contract L1OptimismWithdraw is ERC1155 {
     }
 
     /// @notice Maps token IDs to the address of the underlying ERC20s.
-    mapping(uint256 => Metadata) public underlying;
+    mapping(uint256 => Metadata) public metadata;
 
     /// @dev The address of the L1Broker that is allowed to call the burn() and mint() functions on this contract.
     address internal l1Broker;
@@ -62,6 +62,6 @@ contract L1OptimismWithdraw is ERC1155 {
         uint256 amount
     ) external onlyBroker {
         _mint(recipient, id, amount, "");
-        underlying[id] = Metadata(l1ERC20, l2ERC20);
+        metadata[id] = Metadata(l1ERC20, l2ERC20);
     }
 }
