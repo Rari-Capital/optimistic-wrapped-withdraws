@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 /// @title [L1] ERC1155 token that represents an IOU withdrawal that can be redeemed for a certian amount of an ERC20 on L1.
 /// @dev You need to deploy a L1 broker contract that will be authorized to mint the tokens.
 contract L1OptimismWithdraw is ERC1155 {
-    /// @dev Stores the underlying ERC20 on L1 and L2.
+    /// @dev Stores the underlying ERC20s on L1 and L2.
     /// @dev The l1ERC20 property is the address of the token (on L1) the l2ERC20 has told us it will unwrap to (this is not guaranteed which is why we store the l2ERC20 so users can choose if they trust the token).
     /// @dev The l2ERC20 proprety is the address of the token on L2 that the L2Checkpoint initiated a withdraw on.
     struct Metadata {
@@ -14,7 +14,7 @@ contract L1OptimismWithdraw is ERC1155 {
         address l2ERC20;
     }
 
-    /// @notice Maps token IDs to the address of the underlying ERC20s. T
+    /// @notice Maps token IDs to the address of the underlying ERC20s.
     mapping(uint256 => Metadata) public underlying;
 
     /// @dev The address of the L1Broker that is allowed to call the burn() and mint() functions on this contract.
