@@ -55,7 +55,7 @@ export interface IL2WithdrawableERC20Instance extends Truffle.ContractInstance {
       amount: number | BN | string,
       recipient: string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+    ): Promise<string>;
     sendTransaction(
       amount: number | BN | string,
       recipient: string,
@@ -174,7 +174,7 @@ export interface IL2WithdrawableERC20Instance extends Truffle.ContractInstance {
         amount: number | BN | string,
         recipient: string,
         txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
+      ): Promise<string>;
       sendTransaction(
         amount: number | BN | string,
         recipient: string,

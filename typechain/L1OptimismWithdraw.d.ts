@@ -118,7 +118,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
   metadata(
     arg0: number | BN | string,
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: string; 1: string }>;
+  ): Promise<{ 0: string; 1: string; 2: string }>;
 
   mint: {
     (
@@ -126,6 +126,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -134,6 +135,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
@@ -142,6 +144,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -150,6 +153,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -307,7 +311,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
     metadata(
       arg0: number | BN | string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: string; 1: string }>;
+    ): Promise<{ 0: string; 1: string; 2: string }>;
 
     mint: {
       (
@@ -315,6 +319,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -323,6 +328,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
@@ -331,6 +337,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
@@ -339,6 +346,7 @@ export interface L1OptimismWithdrawInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

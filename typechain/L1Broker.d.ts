@@ -9,6 +9,7 @@ export interface L1BrokerContract extends Truffle.Contract<L1BrokerInstance> {
   "new"(
     _messenger: string,
     _l2Checkpoint: string,
+    _token: string,
     meta?: Truffle.TransactionDetails
   ): Promise<L1BrokerInstance>;
 }
@@ -20,11 +21,12 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
 
   messenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  mintWithdrawNFT: {
+  mintIOU: {
     (
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -32,6 +34,7 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
@@ -39,6 +42,7 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -46,21 +50,48 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
+      l1Bank: string,
       amount: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
+
+  redeemIOU: {
+    (
+      id: number | BN | string,
+      amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      id: number | BN | string,
+      amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      id: number | BN | string,
+      amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      id: number | BN | string,
+      amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   methods: {
     l2Checkpoint(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     messenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-    mintWithdrawNFT: {
+    mintIOU: {
       (
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -68,6 +99,7 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<BN>;
@@ -75,6 +107,7 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
@@ -82,10 +115,36 @@ export interface L1BrokerInstance extends Truffle.ContractInstance {
         recipient: string,
         l1ERC20: string,
         l2ERC20: string,
+        l1Bank: string,
         amount: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
+
+    redeemIOU: {
+      (
+        id: number | BN | string,
+        amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        id: number | BN | string,
+        amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        id: number | BN | string,
+        amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        id: number | BN | string,
+        amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    token(txDetails?: Truffle.TransactionDetails): Promise<string>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;
