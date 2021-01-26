@@ -8,10 +8,11 @@ import {
 } from "@eth-optimism/contracts/build/contracts/iOVM/bridge/iOVM_BaseCrossDomainMessenger.sol";
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title [L2] Contract for withdrawing an ERC20 and minting an ERC1155 as an IOU on L1.
 /// @dev You need to deploy a custom CrossDomainMessenger with no/little delay to mint the IOU ERC1155 on L2 quickly.
-contract L2Checkpoint {
+contract L2Checkpoint is ReentrancyGuard {
     using SafeERC20 for IL2WithdrawableERC20;
 
     /// @notice A custom cross domain messenger with no/little delay to mint the IOU ERC1155 on L2 quickly.
@@ -36,11 +37,14 @@ contract L2Checkpoint {
     /// @param amount The amount (in the decimal scale of the l2/l1 ERC20) to withdraw.
     function withdrawAndMint(IL2WithdrawableERC20 l2Token, uint256 amount)
         external
+        nonReentrant
     {
         // Take control of their token by transfering it to this contract.
         l2Token.safeTransferFrom(msg.sender, address(this), amount);
+
         // Call the withdraw method which should burn the token and send a L1 message to approve the underlying tokens to our L1Broker contract!
-        l2Token.approvalWithdraw({amount: amount, recipient: l1Broker});
+        address l1Bank =
+            l2Token.approvalWithdraw({amount: amount, recipient: l1Broker});
 
         // Mint an NFT on L1 by passing a message through our minterMessanger which should be configured to have a very low to 0 delay before passing the message to L1.
         minterMessenger.sendMessage(
@@ -50,6 +54,7 @@ contract L2Checkpoint {
                 msg.sender,
                 l2Token.l1Address(),
                 address(l2Token),
+                l1Bank,
                 amount
             ),
             1000000

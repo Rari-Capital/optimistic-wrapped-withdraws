@@ -9,9 +9,11 @@ contract L1OptimismWithdraw is ERC1155 {
     /// @dev Stores the underlying ERC20s on L1 and L2.
     /// @dev The l1ERC20 property is the address of the token (on L1) the l2ERC20 has told us it will unwrap to (this is not guaranteed which is why we store the l2ERC20 so users can choose if they trust the token).
     /// @dev The l2ERC20 proprety is the address of the token on L2 that the L2Checkpoint initiated a withdraw on.
+    /// @dev The l1Bank property is the address that will approve `amount` of their `l1ERC20` tokens to `recipient` on L1.
     struct Metadata {
         address l1ERC20;
         address l2ERC20;
+        address l1Bank;
     }
 
     /// @notice Maps token IDs to the address of the underlying ERC20s.
@@ -53,15 +55,17 @@ contract L1OptimismWithdraw is ERC1155 {
     /// @param recipient The address of the user who will recieve the tokens.
     /// @param l1ERC20 The address of the token (on L1) the l2ERC20 has told us it will unwrap to (this is not guaranteed which is why we store the l2ERC20 so users can choose if they trust the token).
     /// @param l2ERC20 The address of the token on L2 that the L2Checkpoint initiated a withdraw on.
+    /// @param l1Bank The address that will approve `amount` of their `l1ERC20` tokens to `recipient` on L1.
     /// @param amount The amount to mint in the decimal scale of the underlying ERC20.
     function mint(
         uint256 id,
         address recipient,
         address l1ERC20,
         address l2ERC20,
+        address l1Bank,
         uint256 amount
     ) external onlyBroker {
+        metadata[id] = Metadata(l1ERC20, l2ERC20, l1Bank);
         _mint(recipient, id, amount, "");
-        metadata[id] = Metadata(l1ERC20, l2ERC20);
     }
 }

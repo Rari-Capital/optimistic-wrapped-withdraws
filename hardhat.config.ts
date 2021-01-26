@@ -1,8 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import "./tasks";
-
 import { HardhatUserConfig } from "hardhat/config";
 
 import { gweiToWei } from "./utils";
