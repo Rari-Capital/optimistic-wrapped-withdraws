@@ -17,6 +17,33 @@ export interface L2CheckpointContract
 type AllEvents = never;
 
 export interface L2CheckpointInstance extends Truffle.ContractInstance {
+  _withdrawAndMint: {
+    (
+      l2Token: string,
+      amount: number | BN | string,
+      recipient: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      l2Token: string,
+      amount: number | BN | string,
+      recipient: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      l2Token: string,
+      amount: number | BN | string,
+      recipient: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      l2Token: string,
+      amount: number | BN | string,
+      recipient: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   l1Broker(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   minterMessenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
@@ -45,6 +72,33 @@ export interface L2CheckpointInstance extends Truffle.ContractInstance {
   };
 
   methods: {
+    _withdrawAndMint: {
+      (
+        l2Token: string,
+        amount: number | BN | string,
+        recipient: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        l2Token: string,
+        amount: number | BN | string,
+        recipient: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        l2Token: string,
+        amount: number | BN | string,
+        recipient: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        l2Token: string,
+        amount: number | BN | string,
+        recipient: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     l1Broker(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     minterMessenger(txDetails?: Truffle.TransactionDetails): Promise<string>;

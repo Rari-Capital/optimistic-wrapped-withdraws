@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import { OwnableContract } from "./Ownable";
 import { ERC165Contract } from "./ERC165";
 import { IERC165Contract } from "./IERC165";
 import { ERC1155Contract } from "./ERC1155";
@@ -12,6 +13,7 @@ import { IERC20Contract } from "./IERC20";
 import { IFundManagerContract } from "./IFundManager";
 import { IL2WithdrawableERC20Contract } from "./IL2WithdrawableERC20";
 import { L1BrokerContract } from "./L1Broker";
+import { L1InstantCrossDomainMessengerContract } from "./L1InstantCrossDomainMessenger";
 import { L1OptimismWithdrawContract } from "./L1OptimismWithdraw";
 import { L2CheckpointContract } from "./L2Checkpoint";
 import { MockFundControllerContract } from "./MockFundController";
@@ -21,6 +23,7 @@ import { SemicenContract } from "./Semicen";
 declare global {
   namespace Truffle {
     interface Artifacts {
+      require(name: "Ownable"): OwnableContract;
       require(name: "ERC165"): ERC165Contract;
       require(name: "IERC165"): IERC165Contract;
       require(name: "ERC1155"): ERC1155Contract;
@@ -31,6 +34,9 @@ declare global {
       require(name: "IFundManager"): IFundManagerContract;
       require(name: "IL2WithdrawableERC20"): IL2WithdrawableERC20Contract;
       require(name: "L1Broker"): L1BrokerContract;
+      require(
+        name: "L1InstantCrossDomainMessenger"
+      ): L1InstantCrossDomainMessengerContract;
       require(name: "L1OptimismWithdraw"): L1OptimismWithdrawContract;
       require(name: "L2Checkpoint"): L2CheckpointContract;
       require(name: "MockFundController"): MockFundControllerContract;
@@ -40,6 +46,7 @@ declare global {
   }
 }
 
+export { OwnableContract, OwnableInstance } from "./Ownable";
 export { ERC165Contract, ERC165Instance } from "./ERC165";
 export { IERC165Contract, IERC165Instance } from "./IERC165";
 export { ERC1155Contract, ERC1155Instance } from "./ERC1155";
@@ -59,6 +66,10 @@ export {
   IL2WithdrawableERC20Instance,
 } from "./IL2WithdrawableERC20";
 export { L1BrokerContract, L1BrokerInstance } from "./L1Broker";
+export {
+  L1InstantCrossDomainMessengerContract,
+  L1InstantCrossDomainMessengerInstance,
+} from "./L1InstantCrossDomainMessenger";
 export {
   L1OptimismWithdrawContract,
   L1OptimismWithdrawInstance,

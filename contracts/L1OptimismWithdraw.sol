@@ -25,7 +25,7 @@ contract L1OptimismWithdraw is ERC1155 {
     /// @notice Creates a new L1OptimismWithdraw ERC1155 token and authorizes the given l1Broker to mint and burn tokens.
     /// @param _l1Broker The address of the L1Broker contract you want to be authorized to call the methods on this contract.
     constructor(address _l1Broker)
-        ERC1155("https://app.rari.capital/api/optimism-withdraw-nfts/{id}")
+        ERC1155("https://app.rari.capital/api/optimistc-wrapped-withdraws/{id}")
     {
         l1Broker = _l1Broker;
     }

@@ -1,7 +1,7 @@
 {
   "name": "optimistic-wrapped-withdraws",
   "version": "1.0.0",
-  "description": "Wrap a L2 withdrawal event as an NFT on L1",
+  "description": "Wrap a L2 withdrawal event as an ERC1155 subtoken on L1",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",

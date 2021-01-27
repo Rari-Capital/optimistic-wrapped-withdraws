@@ -3,19 +3,16 @@ pragma solidity 0.7.3;
 
 import "./L2Checkpoint.sol";
 import "./L1OptimismWithdraw.sol";
+import "./L1InstantCrossDomainMessenger.sol";
 import "./interfaces/IL2WithdrawableERC20.sol";
 
-import {
-    iOVM_BaseCrossDomainMessenger
-} from "@eth-optimism/contracts/build/contracts/iOVM/bridge/iOVM_BaseCrossDomainMessenger.sol";
-
-/// @title [L1] Contract that responds to messages from the L2Checkpoint to mint withdrawal NFTs. It also allows uesrs on L2 to redeem them for the L1 tokens after the waiting period is up.
+/// @title [L1] Contract that responds to messages from the L2Checkpoint to mint withdrawal ERC1155 subtokens. It also allows uesrs on L2 to redeem them for the L1 tokens after the waiting period is up.
 /// @dev You need to deploy a L2Checkpoint contract that will be authorized to send messages to this contract.
 contract L1Broker {
     using SafeERC20 for IL2WithdrawableERC20;
 
-    /// @notice The messenger that is authorized to relay messages from L2 -> L1. This messenger should have little to no waiting period.
-    iOVM_BaseCrossDomainMessenger public messenger;
+    /// @notice The messenger that is authorized to relay messages from L2 -> L1. This messenger should have little/0 waiting period.
+    L1InstantCrossDomainMessenger public messenger;
 
     /// @notice The ERC1155 contract this contract will use to mint IOU withdraw tokens.
     L1OptimismWithdraw public token;
@@ -31,7 +28,7 @@ contract L1Broker {
     /// @param _l2Checkpoint The address of the L2Checkpoint contract (deployed on L2) that is authorized to mint tokens via this contract.
     ///@param _token The ERC1155 contract this contract will use to mint IOU withdraw tokens.
     constructor(
-        iOVM_BaseCrossDomainMessenger _messenger,
+        L1InstantCrossDomainMessenger _messenger,
         address _l2Checkpoint,
         L1OptimismWithdraw _token
     ) {
@@ -50,7 +47,7 @@ contract L1Broker {
 
     /// @notice Mints a L1OptimismWithdraw ERC1155 subtoken.
     /// @notice Only the `l2Checkpoint` contract is authorized to call this method.
-    /// @param recipient The address who should be the recipient of the newly minted NFT.
+    /// @param recipient The address who should be the recipient of the newly minted ERC1155 subtoken.
     /// @param l1ERC20 The address of the token (on L1) the l2ERC20 has told us it will unwrap to (this is not guaranteed which is why we store the l2ERC20 so users can choose if they trust the token).
     /// @param l2ERC20 The address of the token (on L2) that the L2Checkpoint initiated a withdraw on.
     /// @param l1Bank The address that will approve `amount` of their `l1ERC20` tokens to `recipient` on L1.
@@ -89,7 +86,7 @@ contract L1Broker {
         // Get the metadata we need to redeem.
         (address l1ERC20, , address l1Bank) = token.metadata(id);
 
-        // Redeem underlying
+        // Redeem underlying. This will revert if the timelock has not expired as the tokens will not be approved to the broker until the message it relayed after the timelock.
         IL2WithdrawableERC20(l1ERC20).safeTransferFrom(
             l1Bank,
             msg.sender,
