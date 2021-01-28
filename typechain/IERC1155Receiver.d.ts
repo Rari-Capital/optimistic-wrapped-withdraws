@@ -2,178 +2,314 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface IERC1155ReceiverContract
-  extends Truffle.Contract<IERC1155ReceiverInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<IERC1155ReceiverInstance>;
+interface IERC1155ReceiverInterface extends ethers.utils.Interface {
+  functions: {
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
+    "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "onERC1155BatchReceived",
+    values: [string, string, BigNumberish[], BigNumberish[], BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "onERC1155Received",
+    values: [string, string, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "onERC1155BatchReceived",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC1155Received",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class IERC1155Receiver extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface IERC1155ReceiverInstance extends Truffle.ContractInstance {
-  onERC1155BatchReceived: {
-    (
-      operator: string,
-      from: string,
-      ids: (number | BN | string)[],
-      values: (number | BN | string)[],
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      operator: string,
-      from: string,
-      ids: (number | BN | string)[],
-      values: (number | BN | string)[],
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    sendTransaction(
-      operator: string,
-      from: string,
-      ids: (number | BN | string)[],
-      values: (number | BN | string)[],
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      operator: string,
-      from: string,
-      ids: (number | BN | string)[],
-      values: (number | BN | string)[],
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
 
-  onERC1155Received: {
-    (
-      operator: string,
-      from: string,
-      id: number | BN | string,
-      value: number | BN | string,
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      operator: string,
-      from: string,
-      id: number | BN | string,
-      value: number | BN | string,
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    sendTransaction(
-      operator: string,
-      from: string,
-      id: number | BN | string,
-      value: number | BN | string,
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      operator: string,
-      from: string,
-      id: number | BN | string,
-      value: number | BN | string,
-      data: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  interface: IERC1155ReceiverInterface;
 
-  supportsInterface(
-    interfaceId: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
+  functions: {
+    onERC1155BatchReceived(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-  methods: {
-    onERC1155BatchReceived: {
-      (
-        operator: string,
-        from: string,
-        ids: (number | BN | string)[],
-        values: (number | BN | string)[],
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        operator: string,
-        from: string,
-        ids: (number | BN | string)[],
-        values: (number | BN | string)[],
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      sendTransaction(
-        operator: string,
-        from: string,
-        ids: (number | BN | string)[],
-        values: (number | BN | string)[],
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        operator: string,
-        from: string,
-        ids: (number | BN | string)[],
-        values: (number | BN | string)[],
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    onERC1155Received: {
-      (
-        operator: string,
-        from: string,
-        id: number | BN | string,
-        value: number | BN | string,
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        operator: string,
-        from: string,
-        id: number | BN | string,
-        value: number | BN | string,
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      sendTransaction(
-        operator: string,
-        from: string,
-        id: number | BN | string,
-        value: number | BN | string,
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        operator: string,
-        from: string,
-        id: number | BN | string,
-        value: number | BN | string,
-        data: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    onERC1155Received(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "onERC1155Received(address,address,uint256,uint256,bytes)"(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     supportsInterface(
-      interfaceId: string,
-      txDetails?: Truffle.TransactionDetails
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+  };
+
+  onERC1155BatchReceived(
+    operator: string,
+    from: string,
+    ids: BigNumberish[],
+    values: BigNumberish[],
+    data: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"(
+    operator: string,
+    from: string,
+    ids: BigNumberish[],
+    values: BigNumberish[],
+    data: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  onERC1155Received(
+    operator: string,
+    from: string,
+    id: BigNumberish,
+    value: BigNumberish,
+    data: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "onERC1155Received(address,address,uint256,uint256,bytes)"(
+    operator: string,
+    from: string,
+    id: BigNumberish,
+    value: BigNumberish,
+    data: BytesLike,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  supportsInterface(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "supportsInterface(bytes4)"(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  callStatic: {
+    onERC1155BatchReceived(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    onERC1155Received(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "onERC1155Received(address,address,uint256,uint256,bytes)"(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
     ): Promise<boolean>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  filters: {};
+
+  estimateGas: {
+    onERC1155BatchReceived(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    onERC1155Received(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "onERC1155Received(address,address,uint256,uint256,bytes)"(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    onERC1155BatchReceived(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"(
+      operator: string,
+      from: string,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    onERC1155Received(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "onERC1155Received(address,address,uint256,uint256,bytes)"(
+      operator: string,
+      from: string,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

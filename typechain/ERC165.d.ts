@@ -2,37 +2,115 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface ERC165Contract extends Truffle.Contract<ERC165Instance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<ERC165Instance>;
+interface ERC165Interface extends ethers.utils.Interface {
+  functions: {
+    "supportsInterface(bytes4)": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class ERC165 extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface ERC165Instance extends Truffle.ContractInstance {
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
+
+  interface: ERC165Interface;
+
+  functions: {
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+  };
+
   supportsInterface(
-    interfaceId: string,
-    txDetails?: Truffle.TransactionDetails
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
   ): Promise<boolean>;
 
-  methods: {
+  "supportsInterface(bytes4)"(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  callStatic: {
     supportsInterface(
-      interfaceId: string,
-      txDetails?: Truffle.TransactionDetails
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
     ): Promise<boolean>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  filters: {};
+
+  estimateGas: {
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "supportsInterface(bytes4)"(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

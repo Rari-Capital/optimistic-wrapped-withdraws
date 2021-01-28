@@ -8,10 +8,16 @@ import { gweiToWei } from "./utils";
 // Plugins:
 import "solidity-coverage";
 import "@nomiclabs/hardhat-etherscan";
-import "@nomiclabs/hardhat-truffle5";
 import "hardhat-typechain";
 import "hardhat-gas-reporter";
 import { removeConsoleLog } from "hardhat-preprocessor";
+
+import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
+
+// Optimism plugins:
+import "@eth-optimism/plugins/hardhat/compiler";
+import "@eth-optimism/plugins/hardhat/ethers";
 
 const config: HardhatUserConfig = {
   networks: {
@@ -54,7 +60,7 @@ const config: HardhatUserConfig = {
   },
 
   typechain: {
-    target: "truffle-v5",
+    target: "ethers-v5",
   },
 
   gasReporter: {

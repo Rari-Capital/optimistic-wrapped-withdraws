@@ -2,300 +2,501 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface MockFundControllerContract
-  extends Truffle.Contract<MockFundControllerInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<MockFundControllerInstance>;
+interface MockFundControllerInterface extends ethers.utils.Interface {
+  functions: {
+    "approveToMUsd(string,uint256)": FunctionFragment;
+    "approveToPool(uint256,string,uint256)": FunctionFragment;
+    "c_0x945749f6(bytes32)": FunctionFragment;
+    "depositToPool(uint256,string,uint256)": FunctionFragment;
+    "swapMStable(string,string,uint256)": FunctionFragment;
+    "withdrawFromPool(uint256,string,uint256)": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "approveToMUsd",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "approveToPool",
+    values: [BigNumberish, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x945749f6",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositToPool",
+    values: [BigNumberish, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "swapMStable",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawFromPool",
+    values: [BigNumberish, string, BigNumberish]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "approveToMUsd",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "approveToPool",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x945749f6",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositToPool",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "swapMStable",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawFromPool",
+    data: BytesLike
+  ): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class MockFundController extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface MockFundControllerInstance extends Truffle.ContractInstance {
-  approveToMUsd: {
-    (
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
 
-  approveToPool: {
-    (
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  interface: MockFundControllerInterface;
 
-  c_0x945749f6(
-    c__0x945749f6: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<void>;
+  functions: {
+    approveToMUsd(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-  depositToPool: {
-    (
-      pool: number | BN | string,
+    "approveToMUsd(string,uint256)"(
       currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-  swapMStable: {
-    (
-      inputCurrencyCode: string,
-      outputCurrencyCode: string,
-      inputAmount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      inputCurrencyCode: string,
-      outputCurrencyCode: string,
-      inputAmount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      inputCurrencyCode: string,
-      outputCurrencyCode: string,
-      inputAmount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      inputCurrencyCode: string,
-      outputCurrencyCode: string,
-      inputAmount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+    approveToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-  withdrawFromPool: {
-    (
-      pool: number | BN | string,
+    "approveToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
       currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      pool: number | BN | string,
-      currencyCode: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  methods: {
-    approveToMUsd: {
-      (
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    approveToPool: {
-      (
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     c_0x945749f6(
-      c__0x945749f6: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
 
-    depositToPool: {
-      (
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "c_0x945749f6(bytes32)"(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
 
-    swapMStable: {
-      (
-        inputCurrencyCode: string,
-        outputCurrencyCode: string,
-        inputAmount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        inputCurrencyCode: string,
-        outputCurrencyCode: string,
-        inputAmount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        inputCurrencyCode: string,
-        outputCurrencyCode: string,
-        inputAmount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        inputCurrencyCode: string,
-        outputCurrencyCode: string,
-        inputAmount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    depositToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    withdrawFromPool: {
-      (
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        pool: number | BN | string,
-        currencyCode: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "depositToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    swapMStable(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "swapMStable(string,string,uint256)"(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    withdrawFromPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "withdrawFromPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  approveToMUsd(
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "approveToMUsd(string,uint256)"(
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  approveToPool(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "approveToPool(uint256,string,uint256)"(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  c_0x945749f6(
+    c__0x945749f6: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  "c_0x945749f6(bytes32)"(
+    c__0x945749f6: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  depositToPool(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "depositToPool(uint256,string,uint256)"(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  swapMStable(
+    inputCurrencyCode: string,
+    outputCurrencyCode: string,
+    inputAmount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "swapMStable(string,string,uint256)"(
+    inputCurrencyCode: string,
+    outputCurrencyCode: string,
+    inputAmount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  withdrawFromPool(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "withdrawFromPool(uint256,string,uint256)"(
+    pool: BigNumberish,
+    currencyCode: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  callStatic: {
+    approveToMUsd(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "approveToMUsd(string,uint256)"(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    approveToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "approveToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x945749f6(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "c_0x945749f6(bytes32)"(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    depositToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "depositToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    swapMStable(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "swapMStable(string,string,uint256)"(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    withdrawFromPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "withdrawFromPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+  };
+
+  filters: {};
+
+  estimateGas: {
+    approveToMUsd(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "approveToMUsd(string,uint256)"(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    approveToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "approveToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    c_0x945749f6(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "c_0x945749f6(bytes32)"(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    depositToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "depositToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    swapMStable(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "swapMStable(string,string,uint256)"(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    withdrawFromPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "withdrawFromPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    approveToMUsd(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "approveToMUsd(string,uint256)"(
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    approveToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "approveToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x945749f6(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "c_0x945749f6(bytes32)"(
+      c__0x945749f6: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    depositToPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "depositToPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    swapMStable(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "swapMStable(string,string,uint256)"(
+      inputCurrencyCode: string,
+      outputCurrencyCode: string,
+      inputAmount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    withdrawFromPool(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "withdrawFromPool(uint256,string,uint256)"(
+      pool: BigNumberish,
+      currencyCode: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

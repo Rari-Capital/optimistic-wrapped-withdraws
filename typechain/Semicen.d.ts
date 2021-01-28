@@ -2,596 +2,1267 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface SemicenContract extends Truffle.Contract<SemicenInstance> {
-  "new"(
-    _minEpochLength: number | BN | string,
-    _rewardClaimTimelock: number | BN | string,
-    _fundController: string,
-    _fundManager: string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<SemicenInstance>;
-}
-
-export interface FundControllerUpdated {
-  name: "FundControllerUpdated";
-  args: {
-    newFundController: string;
-    0: string;
+interface SemicenInterface extends ethers.utils.Interface {
+  functions: {
+    "addRebalancer(address)": FunctionFragment;
+    "c_0x2e703585(bytes32)": FunctionFragment;
+    "claimRewards()": FunctionFragment;
+    "epochRebalancers(uint256)": FunctionFragment;
+    "fundController()": FunctionFragment;
+    "fundManager()": FunctionFragment;
+    "hasEpochExpired()": FunctionFragment;
+    "lastRebalance()": FunctionFragment;
+    "minEpochLength()": FunctionFragment;
+    "owner()": FunctionFragment;
+    "rebalance(bytes[])": FunctionFragment;
+    "rebalancerLastRebalance(address)": FunctionFragment;
+    "rebalancerUnclaimedRewards(address)": FunctionFragment;
+    "removeRebalancer(address)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "rewardClaimTimelock()": FunctionFragment;
+    "seizeRewards(address,uint256)": FunctionFragment;
+    "setFundController(address)": FunctionFragment;
+    "setFundManager(address)": FunctionFragment;
+    "setMinEpochLength(uint256)": FunctionFragment;
+    "setRewardClaimTimelock(uint256)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
+    "trustedRebalancers(address)": FunctionFragment;
   };
-}
 
-export interface FundManagerUpdated {
-  name: "FundManagerUpdated";
-  args: {
-    newFundManager: string;
-    0: string;
+  encodeFunctionData(
+    functionFragment: "addRebalancer",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x2e703585",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimRewards",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "epochRebalancers",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fundController",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fundManager",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasEpochExpired",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastRebalance",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "minEpochLength",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "rebalance",
+    values: [BytesLike[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rebalancerLastRebalance",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rebalancerUnclaimedRewards",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeRebalancer",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rewardClaimTimelock",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seizeRewards",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFundController",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFundManager",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMinEpochLength",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setRewardClaimTimelock",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "trustedRebalancers",
+    values: [string]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "addRebalancer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x2e703585",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "claimRewards",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "epochRebalancers",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "fundController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "fundManager",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hasEpochExpired",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastRebalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "minEpochLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "rebalance", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "rebalancerLastRebalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "rebalancerUnclaimedRewards",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeRebalancer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "rewardClaimTimelock",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seizeRewards",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setFundController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setFundManager",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMinEpochLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setRewardClaimTimelock",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "trustedRebalancers",
+    data: BytesLike
+  ): Result;
+
+  events: {
+    "FundControllerUpdated(address)": EventFragment;
+    "FundManagerUpdated(address)": EventFragment;
+    "MinEpochLengthUpdated(uint256)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "Rebalance(address,bytes[])": EventFragment;
+    "RebalancerAdded(address)": EventFragment;
+    "RebalancerRemoved(address)": EventFragment;
+    "RewardClaimTimelockUpdated(uint256)": EventFragment;
+    "RewardsClaimed(address,uint256)": EventFragment;
+    "RewardsEarned(address,uint256)": EventFragment;
+    "RewardsSeized(address,uint256)": EventFragment;
   };
+
+  getEvent(nameOrSignatureOrTopic: "FundControllerUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FundManagerUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinEpochLengthUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Rebalance"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RebalancerAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RebalancerRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardClaimTimelockUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsEarned"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsSeized"): EventFragment;
 }
 
-export interface MinEpochLengthUpdated {
-  name: "MinEpochLengthUpdated";
-  args: {
-    newMinEpochLength: BN;
-    0: BN;
-  };
-}
+export class Semicen extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface OwnershipTransferred {
-  name: "OwnershipTransferred";
-  args: {
-    previousOwner: string;
-    newOwner: string;
-    0: string;
-    1: string;
-  };
-}
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
 
-export interface Rebalance {
-  name: "Rebalance";
-  args: {
-    rebalancer: string;
-    steps: string[];
-    0: string;
-    1: string[];
-  };
-}
+  interface: SemicenInterface;
 
-export interface RebalancerAdded {
-  name: "RebalancerAdded";
-  args: {
-    newRebalancer: string;
-    0: string;
-  };
-}
-
-export interface RebalancerRemoved {
-  name: "RebalancerRemoved";
-  args: {
-    rebalancer: string;
-    0: string;
-  };
-}
-
-export interface RewardClaimTimelockUpdated {
-  name: "RewardClaimTimelockUpdated";
-  args: {
-    newTimelock: BN;
-    0: BN;
-  };
-}
-
-export interface RewardsClaimed {
-  name: "RewardsClaimed";
-  args: {
-    claimer: string;
-    amount: BN;
-    0: string;
-    1: BN;
-  };
-}
-
-export interface RewardsEarned {
-  name: "RewardsEarned";
-  args: {
-    rebalancer: string;
-    amount: BN;
-    0: string;
-    1: BN;
-  };
-}
-
-export interface RewardsSeized {
-  name: "RewardsSeized";
-  args: {
-    rewardHolder: string;
-    amount: BN;
-    0: string;
-    1: BN;
-  };
-}
-
-type AllEvents =
-  | FundControllerUpdated
-  | FundManagerUpdated
-  | MinEpochLengthUpdated
-  | OwnershipTransferred
-  | Rebalance
-  | RebalancerAdded
-  | RebalancerRemoved
-  | RewardClaimTimelockUpdated
-  | RewardsClaimed
-  | RewardsEarned
-  | RewardsSeized;
-
-export interface SemicenInstance extends Truffle.ContractInstance {
-  addRebalancer: {
-    (newRebalancer: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
+  functions: {
+    addRebalancer(
       newRebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "addRebalancer(address)"(
       newRebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newRebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  c_0x2e703585(
-    c__0x2e703585: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<void>;
-
-  claimRewards: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
-  epochRebalancers(
-    arg0: number | BN | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  fundController(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  fundManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  hasEpochExpired(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
-
-  lastRebalance(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  minEpochLength(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  rebalance: {
-    (steps: string[], txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      steps: string[],
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      steps: string[],
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      steps: string[],
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  rebalancerLastRebalance(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
-
-  rebalancerUnclaimedRewards(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
-
-  removeRebalancer: {
-    (rebalancer: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      rebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      rebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      rebalancer: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  renounceOwnership: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
-  rewardClaimTimelock(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  seizeRewards: {
-    (
-      rewardHolder: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      rewardHolder: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      rewardHolder: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      rewardHolder: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setFundController: {
-    (
-      newFundController: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      newFundController: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newFundController: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newFundController: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setFundManager: {
-    (newFundManager: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      newFundManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newFundManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newFundManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setMinEpochLength: {
-    (
-      newMinEpochLength: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      newMinEpochLength: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newMinEpochLength: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newMinEpochLength: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setRewardClaimTimelock: {
-    (
-      newTimelock: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      newTimelock: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newTimelock: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newTimelock: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  transferOwnership: {
-    (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      newOwner: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newOwner: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newOwner: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  trustedRebalancers(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  methods: {
-    addRebalancer: {
-      (newRebalancer: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        newRebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newRebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newRebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     c_0x2e703585(
-      c__0x2e703585: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
 
-    claimRewards: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
+    "c_0x2e703585(bytes32)"(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
+
+    claimRewards(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "claimRewards()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     epochRebalancers(
-      arg0: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    fundController(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    "epochRebalancers(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    fundManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    fundController(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    hasEpochExpired(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+    "fundController()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    lastRebalance(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    fundManager(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    minEpochLength(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    "fundManager()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
 
-    owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    hasEpochExpired(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
 
-    rebalance: {
-      (steps: string[], txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        steps: string[],
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        steps: string[],
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        steps: string[],
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "hasEpochExpired()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    lastRebalance(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "lastRebalance()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    minEpochLength(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "minEpochLength()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    owner(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "owner()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    rebalance(
+      steps: BytesLike[],
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "rebalance(bytes[])"(
+      steps: BytesLike[],
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     rebalancerLastRebalance(
       arg0: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "rebalancerLastRebalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
     rebalancerUnclaimedRewards(
       arg0: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
-    removeRebalancer: {
-      (rebalancer: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        rebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        rebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        rebalancer: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "rebalancerUnclaimedRewards(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
-    renounceOwnership: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
+    removeRebalancer(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    rewardClaimTimelock(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    "removeRebalancer(address)"(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    seizeRewards: {
-      (
-        rewardHolder: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        rewardHolder: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        rewardHolder: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        rewardHolder: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
 
-    setFundController: {
-      (
-        newFundController: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        newFundController: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newFundController: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newFundController: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "renounceOwnership()"(overrides?: Overrides): Promise<ContractTransaction>;
 
-    setFundManager: {
-      (newFundManager: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        newFundManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newFundManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newFundManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    rewardClaimTimelock(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
-    setMinEpochLength: {
-      (
-        newMinEpochLength: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        newMinEpochLength: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newMinEpochLength: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newMinEpochLength: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "rewardClaimTimelock()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
-    setRewardClaimTimelock: {
-      (
-        newTimelock: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        newTimelock: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newTimelock: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newTimelock: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    seizeRewards(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    transferOwnership: {
-      (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        newOwner: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newOwner: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newOwner: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "seizeRewards(address,uint256)"(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    setFundController(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "setFundController(address)"(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    setFundManager(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "setFundManager(address)"(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    setMinEpochLength(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "setMinEpochLength(uint256)"(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    setRewardClaimTimelock(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "setRewardClaimTimelock(uint256)"(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     trustedRebalancers(
       arg0: string,
-      txDetails?: Truffle.TransactionDetails
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "trustedRebalancers(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+  };
+
+  addRebalancer(
+    newRebalancer: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "addRebalancer(address)"(
+    newRebalancer: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  c_0x2e703585(
+    c__0x2e703585: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  "c_0x2e703585(bytes32)"(
+    c__0x2e703585: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  claimRewards(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "claimRewards()"(overrides?: Overrides): Promise<ContractTransaction>;
+
+  epochRebalancers(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "epochRebalancers(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  fundController(overrides?: CallOverrides): Promise<string>;
+
+  "fundController()"(overrides?: CallOverrides): Promise<string>;
+
+  fundManager(overrides?: CallOverrides): Promise<string>;
+
+  "fundManager()"(overrides?: CallOverrides): Promise<string>;
+
+  hasEpochExpired(overrides?: CallOverrides): Promise<boolean>;
+
+  "hasEpochExpired()"(overrides?: CallOverrides): Promise<boolean>;
+
+  lastRebalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "lastRebalance()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  minEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "minEpochLength()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  "owner()"(overrides?: CallOverrides): Promise<string>;
+
+  rebalance(
+    steps: BytesLike[],
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "rebalance(bytes[])"(
+    steps: BytesLike[],
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  rebalancerLastRebalance(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "rebalancerLastRebalance(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  rebalancerUnclaimedRewards(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "rebalancerUnclaimedRewards(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  removeRebalancer(
+    rebalancer: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "removeRebalancer(address)"(
+    rebalancer: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "renounceOwnership()"(overrides?: Overrides): Promise<ContractTransaction>;
+
+  rewardClaimTimelock(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "rewardClaimTimelock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  seizeRewards(
+    rewardHolder: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "seizeRewards(address,uint256)"(
+    rewardHolder: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  setFundController(
+    newFundController: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "setFundController(address)"(
+    newFundController: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  setFundManager(
+    newFundManager: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "setFundManager(address)"(
+    newFundManager: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  setMinEpochLength(
+    newMinEpochLength: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "setMinEpochLength(uint256)"(
+    newMinEpochLength: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  setRewardClaimTimelock(
+    newTimelock: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "setRewardClaimTimelock(uint256)"(
+    newTimelock: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "transferOwnership(address)"(
+    newOwner: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  trustedRebalancers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+  "trustedRebalancers(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  callStatic: {
+    addRebalancer(
+      newRebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "addRebalancer(address)"(
+      newRebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x2e703585(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "c_0x2e703585(bytes32)"(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    claimRewards(overrides?: CallOverrides): Promise<void>;
+
+    "claimRewards()"(overrides?: CallOverrides): Promise<void>;
+
+    epochRebalancers(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "epochRebalancers(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    fundController(overrides?: CallOverrides): Promise<string>;
+
+    "fundController()"(overrides?: CallOverrides): Promise<string>;
+
+    fundManager(overrides?: CallOverrides): Promise<string>;
+
+    "fundManager()"(overrides?: CallOverrides): Promise<string>;
+
+    hasEpochExpired(overrides?: CallOverrides): Promise<boolean>;
+
+    "hasEpochExpired()"(overrides?: CallOverrides): Promise<boolean>;
+
+    lastRebalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "lastRebalance()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    minEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "minEpochLength()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    "owner()"(overrides?: CallOverrides): Promise<string>;
+
+    rebalance(steps: BytesLike[], overrides?: CallOverrides): Promise<void>;
+
+    "rebalance(bytes[])"(
+      steps: BytesLike[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    rebalancerLastRebalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "rebalancerLastRebalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    rebalancerUnclaimedRewards(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "rebalancerUnclaimedRewards(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    removeRebalancer(
+      rebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "removeRebalancer(address)"(
+      rebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    "renounceOwnership()"(overrides?: CallOverrides): Promise<void>;
+
+    rewardClaimTimelock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "rewardClaimTimelock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    seizeRewards(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "seizeRewards(address,uint256)"(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setFundController(
+      newFundController: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "setFundController(address)"(
+      newFundController: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setFundManager(
+      newFundManager: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "setFundManager(address)"(
+      newFundManager: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMinEpochLength(
+      newMinEpochLength: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "setMinEpochLength(uint256)"(
+      newMinEpochLength: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setRewardClaimTimelock(
+      newTimelock: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "setRewardClaimTimelock(uint256)"(
+      newTimelock: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    trustedRebalancers(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "trustedRebalancers(address)"(
+      arg0: string,
+      overrides?: CallOverrides
     ): Promise<boolean>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  filters: {
+    FundControllerUpdated(newFundController: string | null): EventFilter;
+
+    FundManagerUpdated(newFundManager: string | null): EventFilter;
+
+    MinEpochLengthUpdated(newMinEpochLength: null): EventFilter;
+
+    OwnershipTransferred(
+      previousOwner: string | null,
+      newOwner: string | null
+    ): EventFilter;
+
+    Rebalance(rebalancer: string | null, steps: null): EventFilter;
+
+    RebalancerAdded(newRebalancer: string | null): EventFilter;
+
+    RebalancerRemoved(rebalancer: string | null): EventFilter;
+
+    RewardClaimTimelockUpdated(newTimelock: null): EventFilter;
+
+    RewardsClaimed(claimer: string | null, amount: null): EventFilter;
+
+    RewardsEarned(rebalancer: string | null, amount: null): EventFilter;
+
+    RewardsSeized(rewardHolder: string | null, amount: null): EventFilter;
+  };
+
+  estimateGas: {
+    addRebalancer(
+      newRebalancer: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "addRebalancer(address)"(
+      newRebalancer: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    c_0x2e703585(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "c_0x2e703585(bytes32)"(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    claimRewards(overrides?: Overrides): Promise<BigNumber>;
+
+    "claimRewards()"(overrides?: Overrides): Promise<BigNumber>;
+
+    epochRebalancers(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "epochRebalancers(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    fundController(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "fundController()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    fundManager(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "fundManager()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hasEpochExpired(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "hasEpochExpired()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lastRebalance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "lastRebalance()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    minEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "minEpochLength()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    rebalance(steps: BytesLike[], overrides?: Overrides): Promise<BigNumber>;
+
+    "rebalance(bytes[])"(
+      steps: BytesLike[],
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    rebalancerLastRebalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "rebalancerLastRebalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    rebalancerUnclaimedRewards(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "rebalancerUnclaimedRewards(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    removeRebalancer(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "removeRebalancer(address)"(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    renounceOwnership(overrides?: Overrides): Promise<BigNumber>;
+
+    "renounceOwnership()"(overrides?: Overrides): Promise<BigNumber>;
+
+    rewardClaimTimelock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "rewardClaimTimelock()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    seizeRewards(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "seizeRewards(address,uint256)"(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    setFundController(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "setFundController(address)"(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    setFundManager(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "setFundManager(address)"(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    setMinEpochLength(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "setMinEpochLength(uint256)"(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    setRewardClaimTimelock(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "setRewardClaimTimelock(uint256)"(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    trustedRebalancers(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "trustedRebalancers(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    addRebalancer(
+      newRebalancer: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "addRebalancer(address)"(
+      newRebalancer: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x2e703585(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "c_0x2e703585(bytes32)"(
+      c__0x2e703585: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    claimRewards(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "claimRewards()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    epochRebalancers(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "epochRebalancers(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    fundController(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "fundController()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    fundManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "fundManager()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hasEpochExpired(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "hasEpochExpired()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lastRebalance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "lastRebalance()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    minEpochLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "minEpochLength()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    rebalance(
+      steps: BytesLike[],
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "rebalance(bytes[])"(
+      steps: BytesLike[],
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    rebalancerLastRebalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "rebalancerLastRebalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    rebalancerUnclaimedRewards(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "rebalancerUnclaimedRewards(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    removeRebalancer(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "removeRebalancer(address)"(
+      rebalancer: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "renounceOwnership()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    rewardClaimTimelock(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "rewardClaimTimelock()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    seizeRewards(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "seizeRewards(address,uint256)"(
+      rewardHolder: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    setFundController(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "setFundController(address)"(
+      newFundController: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    setFundManager(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "setFundManager(address)"(
+      newFundManager: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    setMinEpochLength(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "setMinEpochLength(uint256)"(
+      newMinEpochLength: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    setRewardClaimTimelock(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "setRewardClaimTimelock(uint256)"(
+      newTimelock: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    trustedRebalancers(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "trustedRebalancers(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

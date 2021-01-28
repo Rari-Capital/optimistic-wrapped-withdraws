@@ -2,425 +2,837 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface L1InstantCrossDomainMessengerContract
-  extends Truffle.Contract<L1InstantCrossDomainMessengerInstance> {
-  "new"(
-    meta?: Truffle.TransactionDetails
-  ): Promise<L1InstantCrossDomainMessengerInstance>;
+interface L1InstantCrossDomainMessengerInterface
+  extends ethers.utils.Interface {
+  functions: {
+    "initialize(address)": FunctionFragment;
+    "messageNonce()": FunctionFragment;
+    "relayMessage(address,address,bytes,uint256,tuple)": FunctionFragment;
+    "relayedMessages(bytes32)": FunctionFragment;
+    "replayMessage(address,address,bytes,uint256,uint32)": FunctionFragment;
+    "resolve(string)": FunctionFragment;
+    "sendMessage(address,bytes,uint32)": FunctionFragment;
+    "sentMessages(bytes32)": FunctionFragment;
+    "successfulMessages(bytes32)": FunctionFragment;
+    "xDomainMessageSender()": FunctionFragment;
+  };
+
+  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "messageNonce",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "relayMessage",
+    values: [
+      string,
+      string,
+      BytesLike,
+      BigNumberish,
+      {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "relayedMessages",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "replayMessage",
+    values: [string, string, BytesLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "resolve", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "sendMessage",
+    values: [string, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sentMessages",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "successfulMessages",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "xDomainMessageSender",
+    values?: undefined
+  ): string;
+
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "messageNonce",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "relayMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "relayedMessages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "replayMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "resolve", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "sendMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sentMessages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "successfulMessages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "xDomainMessageSender",
+    data: BytesLike
+  ): Result;
+
+  events: {
+    "RelayedMessage(bytes32)": EventFragment;
+    "SentMessage(bytes)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "RelayedMessage"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SentMessage"): EventFragment;
 }
 
-export interface RelayedMessage {
-  name: "RelayedMessage";
-  args: {
-    msgHash: string;
-    0: string;
-  };
-}
+export class L1InstantCrossDomainMessenger extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface SentMessage {
-  name: "SentMessage";
-  args: {
-    message: string;
-    0: string;
-  };
-}
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
 
-type AllEvents = RelayedMessage | SentMessage;
+  interface: L1InstantCrossDomainMessengerInterface;
 
-export interface L1InstantCrossDomainMessengerInstance
-  extends Truffle.ContractInstance {
-  initialize: {
-    (
+  functions: {
+    initialize(
       _libAddressManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "initialize(address)"(
       _libAddressManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _libAddressManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _libAddressManager: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-  messageNonce(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    messageNonce(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
-  relayMessage: {
-    (
+    "messageNonce()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    relayMessage(
       _target: string,
       _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
       _proof: {
-        stateRoot: string;
+        stateRoot: BytesLike;
         stateRootBatchHeader: {
-          batchIndex: number | BN | string;
-          batchRoot: string;
-          batchSize: number | BN | string;
-          prevTotalElements: number | BN | string;
-          extraData: string;
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
         };
-        stateRootProof: { index: number | BN | string; siblings: string[] };
-        stateTrieWitness: string;
-        storageTrieWitness: string;
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
       },
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "relayMessage(address,address,bytes,uint256,tuple)"(
       _target: string,
       _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
       _proof: {
-        stateRoot: string;
+        stateRoot: BytesLike;
         stateRootBatchHeader: {
-          batchIndex: number | BN | string;
-          batchRoot: string;
-          batchSize: number | BN | string;
-          prevTotalElements: number | BN | string;
-          extraData: string;
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
         };
-        stateRootProof: { index: number | BN | string; siblings: string[] };
-        stateTrieWitness: string;
-        storageTrieWitness: string;
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
       },
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _proof: {
-        stateRoot: string;
-        stateRootBatchHeader: {
-          batchIndex: number | BN | string;
-          batchRoot: string;
-          batchSize: number | BN | string;
-          prevTotalElements: number | BN | string;
-          extraData: string;
-        };
-        stateRootProof: { index: number | BN | string; siblings: string[] };
-        stateTrieWitness: string;
-        storageTrieWitness: string;
-      },
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _proof: {
-        stateRoot: string;
-        stateRootBatchHeader: {
-          batchIndex: number | BN | string;
-          batchRoot: string;
-          batchSize: number | BN | string;
-          prevTotalElements: number | BN | string;
-          extraData: string;
-        };
-        stateRootProof: { index: number | BN | string; siblings: string[] };
-        stateTrieWitness: string;
-        storageTrieWitness: string;
-      },
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  relayedMessages(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  replayMessage: {
-    (
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _target: string,
-      _sender: string,
-      _message: string,
-      _messageNonce: number | BN | string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  resolve(
-    _name: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  sendMessage: {
-    (
-      _target: string,
-      _message: string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _target: string,
-      _message: string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _target: string,
-      _message: string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _target: string,
-      _message: string,
-      _gasLimit: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  sentMessages(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  successfulMessages(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  xDomainMessageSender(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  methods: {
-    initialize: {
-      (
-        _libAddressManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _libAddressManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _libAddressManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _libAddressManager: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    messageNonce(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    relayMessage: {
-      (
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _proof: {
-          stateRoot: string;
-          stateRootBatchHeader: {
-            batchIndex: number | BN | string;
-            batchRoot: string;
-            batchSize: number | BN | string;
-            prevTotalElements: number | BN | string;
-            extraData: string;
-          };
-          stateRootProof: { index: number | BN | string; siblings: string[] };
-          stateTrieWitness: string;
-          storageTrieWitness: string;
-        },
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _proof: {
-          stateRoot: string;
-          stateRootBatchHeader: {
-            batchIndex: number | BN | string;
-            batchRoot: string;
-            batchSize: number | BN | string;
-            prevTotalElements: number | BN | string;
-            extraData: string;
-          };
-          stateRootProof: { index: number | BN | string; siblings: string[] };
-          stateTrieWitness: string;
-          storageTrieWitness: string;
-        },
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _proof: {
-          stateRoot: string;
-          stateRootBatchHeader: {
-            batchIndex: number | BN | string;
-            batchRoot: string;
-            batchSize: number | BN | string;
-            prevTotalElements: number | BN | string;
-            extraData: string;
-          };
-          stateRootProof: { index: number | BN | string; siblings: string[] };
-          stateTrieWitness: string;
-          storageTrieWitness: string;
-        },
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _proof: {
-          stateRoot: string;
-          stateRootBatchHeader: {
-            batchIndex: number | BN | string;
-            batchRoot: string;
-            batchSize: number | BN | string;
-            prevTotalElements: number | BN | string;
-            extraData: string;
-          };
-          stateRootProof: { index: number | BN | string; siblings: string[] };
-          stateTrieWitness: string;
-          storageTrieWitness: string;
-        },
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     relayedMessages(
-      arg0: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
 
-    replayMessage: {
-      (
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _target: string,
-        _sender: string,
-        _message: string,
-        _messageNonce: number | BN | string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "relayedMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    replayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "replayMessage(address,address,bytes,uint256,uint32)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     resolve(
       _name: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
+      overrides?: CallOverrides
+    ): Promise<{
+      _contract: string;
+      0: string;
+    }>;
 
-    sendMessage: {
-      (
-        _target: string,
-        _message: string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _target: string,
-        _message: string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _target: string,
-        _message: string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _target: string,
-        _message: string,
-        _gasLimit: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "resolve(string)"(
+      _name: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      _contract: string;
+      0: string;
+    }>;
+
+    sendMessage(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "sendMessage(address,bytes,uint32)"(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     sentMessages(
-      arg0: string,
-      txDetails?: Truffle.TransactionDetails
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "sentMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    successfulMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "successfulMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    xDomainMessageSender(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "xDomainMessageSender()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+  };
+
+  initialize(
+    _libAddressManager: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "initialize(address)"(
+    _libAddressManager: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  messageNonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "messageNonce()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  relayMessage(
+    _target: string,
+    _sender: string,
+    _message: BytesLike,
+    _messageNonce: BigNumberish,
+    _proof: {
+      stateRoot: BytesLike;
+      stateRootBatchHeader: {
+        batchIndex: BigNumberish;
+        batchRoot: BytesLike;
+        batchSize: BigNumberish;
+        prevTotalElements: BigNumberish;
+        extraData: BytesLike;
+      };
+      stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+      stateTrieWitness: BytesLike;
+      storageTrieWitness: BytesLike;
+    },
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "relayMessage(address,address,bytes,uint256,tuple)"(
+    _target: string,
+    _sender: string,
+    _message: BytesLike,
+    _messageNonce: BigNumberish,
+    _proof: {
+      stateRoot: BytesLike;
+      stateRootBatchHeader: {
+        batchIndex: BigNumberish;
+        batchRoot: BytesLike;
+        batchSize: BigNumberish;
+        prevTotalElements: BigNumberish;
+        extraData: BytesLike;
+      };
+      stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+      stateTrieWitness: BytesLike;
+      storageTrieWitness: BytesLike;
+    },
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  relayedMessages(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+  "relayedMessages(bytes32)"(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  replayMessage(
+    _target: string,
+    _sender: string,
+    _message: BytesLike,
+    _messageNonce: BigNumberish,
+    _gasLimit: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "replayMessage(address,address,bytes,uint256,uint32)"(
+    _target: string,
+    _sender: string,
+    _message: BytesLike,
+    _messageNonce: BigNumberish,
+    _gasLimit: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  resolve(_name: string, overrides?: CallOverrides): Promise<string>;
+
+  "resolve(string)"(_name: string, overrides?: CallOverrides): Promise<string>;
+
+  sendMessage(
+    _target: string,
+    _message: BytesLike,
+    _gasLimit: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "sendMessage(address,bytes,uint32)"(
+    _target: string,
+    _message: BytesLike,
+    _gasLimit: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  sentMessages(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+  "sentMessages(bytes32)"(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  successfulMessages(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "successfulMessages(bytes32)"(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  xDomainMessageSender(overrides?: CallOverrides): Promise<string>;
+
+  "xDomainMessageSender()"(overrides?: CallOverrides): Promise<string>;
+
+  callStatic: {
+    initialize(
+      _libAddressManager: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "initialize(address)"(
+      _libAddressManager: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    messageNonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "messageNonce()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    relayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "relayMessage(address,address,bytes,uint256,tuple)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    relayedMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "relayedMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    replayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "replayMessage(address,address,bytes,uint256,uint32)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    resolve(_name: string, overrides?: CallOverrides): Promise<string>;
+
+    "resolve(string)"(
+      _name: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    sendMessage(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "sendMessage(address,bytes,uint32)"(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    sentMessages(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+    "sentMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
     successfulMessages(
-      arg0: string,
-      txDetails?: Truffle.TransactionDetails
+      arg0: BytesLike,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
-    xDomainMessageSender(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
+    "successfulMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    xDomainMessageSender(overrides?: CallOverrides): Promise<string>;
+
+    "xDomainMessageSender()"(overrides?: CallOverrides): Promise<string>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  filters: {
+    RelayedMessage(msgHash: null): EventFilter;
+
+    SentMessage(message: null): EventFilter;
+  };
+
+  estimateGas: {
+    initialize(
+      _libAddressManager: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "initialize(address)"(
+      _libAddressManager: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    messageNonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "messageNonce()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    relayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "relayMessage(address,address,bytes,uint256,tuple)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    relayedMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "relayedMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    replayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "replayMessage(address,address,bytes,uint256,uint32)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    resolve(_name: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "resolve(string)"(
+      _name: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    sendMessage(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "sendMessage(address,bytes,uint32)"(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    sentMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "sentMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    successfulMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "successfulMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    xDomainMessageSender(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "xDomainMessageSender()"(overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    initialize(
+      _libAddressManager: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "initialize(address)"(
+      _libAddressManager: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    messageNonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "messageNonce()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    relayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "relayMessage(address,address,bytes,uint256,tuple)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _proof: {
+        stateRoot: BytesLike;
+        stateRootBatchHeader: {
+          batchIndex: BigNumberish;
+          batchRoot: BytesLike;
+          batchSize: BigNumberish;
+          prevTotalElements: BigNumberish;
+          extraData: BytesLike;
+        };
+        stateRootProof: { index: BigNumberish; siblings: BytesLike[] };
+        stateTrieWitness: BytesLike;
+        storageTrieWitness: BytesLike;
+      },
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    relayedMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "relayedMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    replayMessage(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "replayMessage(address,address,bytes,uint256,uint32)"(
+      _target: string,
+      _sender: string,
+      _message: BytesLike,
+      _messageNonce: BigNumberish,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    resolve(
+      _name: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "resolve(string)"(
+      _name: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sendMessage(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "sendMessage(address,bytes,uint32)"(
+      _target: string,
+      _message: BytesLike,
+      _gasLimit: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    sentMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "sentMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    successfulMessages(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "successfulMessages(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    xDomainMessageSender(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "xDomainMessageSender()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

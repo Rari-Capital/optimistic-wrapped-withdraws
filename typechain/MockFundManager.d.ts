@@ -2,120 +2,263 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface MockFundManagerContract
-  extends Truffle.Contract<MockFundManagerInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<MockFundManagerInstance>;
+interface MockFundManagerInterface extends ethers.utils.Interface {
+  functions: {
+    "c_0x9cd22321(bytes32)": FunctionFragment;
+    "getInterestFeesUnclaimed()": FunctionFragment;
+    "getRebalancerPercentage()": FunctionFragment;
+    "withdrawInterestFees(uint256,address)": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "c_0x9cd22321",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getInterestFeesUnclaimed",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRebalancerPercentage",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawInterestFees",
+    values: [BigNumberish, string]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "c_0x9cd22321",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getInterestFeesUnclaimed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRebalancerPercentage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawInterestFees",
+    data: BytesLike
+  ): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class MockFundManager extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface MockFundManagerInstance extends Truffle.ContractInstance {
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
+
+  interface: MockFundManagerInterface;
+
+  functions: {
+    c_0x9cd22321(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
+
+    "c_0x9cd22321(bytes32)"(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: void;
+    }>;
+
+    getInterestFeesUnclaimed(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "getInterestFeesUnclaimed()"(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    getRebalancerPercentage(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "getRebalancerPercentage()"(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    withdrawInterestFees(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "withdrawInterestFees(uint256,address)"(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+  };
+
   c_0x9cd22321(
-    c__0x9cd22321: string,
-    txDetails?: Truffle.TransactionDetails
+    c__0x9cd22321: BytesLike,
+    overrides?: CallOverrides
   ): Promise<void>;
 
-  getInterestFeesUnclaimed: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
+  "c_0x9cd22321(bytes32)"(
+    c__0x9cd22321: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
 
-  getRebalancerPercentage: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
+  getInterestFeesUnclaimed(overrides?: Overrides): Promise<ContractTransaction>;
 
-  withdrawInterestFees: {
-    (
-      amount: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      amount: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      amount: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      amount: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  "getInterestFeesUnclaimed()"(
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  methods: {
+  getRebalancerPercentage(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "getRebalancerPercentage()"(
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  withdrawInterestFees(
+    amount: BigNumberish,
+    to: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "withdrawInterestFees(uint256,address)"(
+    amount: BigNumberish,
+    to: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  callStatic: {
     c_0x9cd22321(
-      c__0x9cd22321: string,
-      txDetails?: Truffle.TransactionDetails
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
     ): Promise<void>;
 
-    getInterestFeesUnclaimed: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
+    "c_0x9cd22321(bytes32)"(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    getRebalancerPercentage: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
+    getInterestFeesUnclaimed(overrides?: CallOverrides): Promise<BigNumber>;
 
-    withdrawInterestFees: {
-      (
-        amount: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        amount: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        amount: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        amount: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "getInterestFeesUnclaimed()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getRebalancerPercentage(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "getRebalancerPercentage()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    withdrawInterestFees(
+      amount: BigNumberish,
+      to: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "withdrawInterestFees(uint256,address)"(
+      amount: BigNumberish,
+      to: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  filters: {};
+
+  estimateGas: {
+    c_0x9cd22321(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "c_0x9cd22321(bytes32)"(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getInterestFeesUnclaimed(overrides?: Overrides): Promise<BigNumber>;
+
+    "getInterestFeesUnclaimed()"(overrides?: Overrides): Promise<BigNumber>;
+
+    getRebalancerPercentage(overrides?: Overrides): Promise<BigNumber>;
+
+    "getRebalancerPercentage()"(overrides?: Overrides): Promise<BigNumber>;
+
+    withdrawInterestFees(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "withdrawInterestFees(uint256,address)"(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    c_0x9cd22321(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "c_0x9cd22321(bytes32)"(
+      c__0x9cd22321: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getInterestFeesUnclaimed(
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "getInterestFeesUnclaimed()"(
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    getRebalancerPercentage(
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "getRebalancerPercentage()"(
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    withdrawInterestFees(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "withdrawInterestFees(uint256,address)"(
+      amount: BigNumberish,
+      to: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

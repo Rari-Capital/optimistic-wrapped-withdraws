@@ -2,140 +2,271 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface L2CheckpointContract
-  extends Truffle.Contract<L2CheckpointInstance> {
-  "new"(
-    _minterMessenger: string,
-    _l1Broker: string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<L2CheckpointInstance>;
+interface L2CheckpointInterface extends ethers.utils.Interface {
+  functions: {
+    "_withdrawAndMint(address,uint256,address)": FunctionFragment;
+    "l1Broker()": FunctionFragment;
+    "minterMessenger()": FunctionFragment;
+    "withdrawAndMint(address,uint256)": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "_withdrawAndMint",
+    values: [string, BigNumberish, string]
+  ): string;
+  encodeFunctionData(functionFragment: "l1Broker", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "minterMessenger",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawAndMint",
+    values: [string, BigNumberish]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "_withdrawAndMint",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "l1Broker", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "minterMessenger",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawAndMint",
+    data: BytesLike
+  ): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class L2Checkpoint extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface L2CheckpointInstance extends Truffle.ContractInstance {
-  _withdrawAndMint: {
-    (
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
+
+  interface: L2CheckpointInterface;
+
+  functions: {
+    _withdrawAndMint(
       l2Token: string,
-      amount: number | BN | string,
+      amount: BigNumberish,
       recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "_withdrawAndMint(address,uint256,address)"(
       l2Token: string,
-      amount: number | BN | string,
+      amount: BigNumberish,
       recipient: string,
-      txDetails?: Truffle.TransactionDetails
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    l1Broker(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "l1Broker()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    minterMessenger(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "minterMessenger()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "withdrawAndMint(address,uint256)"(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+  };
+
+  _withdrawAndMint(
+    l2Token: string,
+    amount: BigNumberish,
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "_withdrawAndMint(address,uint256,address)"(
+    l2Token: string,
+    amount: BigNumberish,
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  l1Broker(overrides?: CallOverrides): Promise<string>;
+
+  "l1Broker()"(overrides?: CallOverrides): Promise<string>;
+
+  minterMessenger(overrides?: CallOverrides): Promise<string>;
+
+  "minterMessenger()"(overrides?: CallOverrides): Promise<string>;
+
+  withdrawAndMint(
+    l2Token: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "withdrawAndMint(address,uint256)"(
+    l2Token: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  callStatic: {
+    _withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
     ): Promise<void>;
-    sendTransaction(
+
+    "_withdrawAndMint(address,uint256,address)"(
       l2Token: string,
-      amount: number | BN | string,
+      amount: BigNumberish,
       recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      l2Token: string,
-      amount: number | BN | string,
-      recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  l1Broker(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  minterMessenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  withdrawAndMint: {
-    (
-      l2Token: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      l2Token: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
+      overrides?: CallOverrides
     ): Promise<void>;
-    sendTransaction(
+
+    l1Broker(overrides?: CallOverrides): Promise<string>;
+
+    "l1Broker()"(overrides?: CallOverrides): Promise<string>;
+
+    minterMessenger(overrides?: CallOverrides): Promise<string>;
+
+    "minterMessenger()"(overrides?: CallOverrides): Promise<string>;
+
+    withdrawAndMint(
       l2Token: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "withdrawAndMint(address,uint256)"(
       l2Token: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
-  methods: {
-    _withdrawAndMint: {
-      (
-        l2Token: string,
-        amount: number | BN | string,
-        recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        l2Token: string,
-        amount: number | BN | string,
-        recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        l2Token: string,
-        amount: number | BN | string,
-        recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        l2Token: string,
-        amount: number | BN | string,
-        recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+  filters: {};
 
-    l1Broker(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  estimateGas: {
+    _withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    minterMessenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    "_withdrawAndMint(address,uint256,address)"(
+      l2Token: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    withdrawAndMint: {
-      (
-        l2Token: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        l2Token: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        l2Token: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        l2Token: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    l1Broker(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "l1Broker()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    minterMessenger(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "minterMessenger()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "withdrawAndMint(address,uint256)"(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  populateTransaction: {
+    _withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "_withdrawAndMint(address,uint256,address)"(
+      l2Token: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    l1Broker(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "l1Broker()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    minterMessenger(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "minterMessenger()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    withdrawAndMint(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "withdrawAndMint(address,uint256)"(
+      l2Token: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+  };
 }

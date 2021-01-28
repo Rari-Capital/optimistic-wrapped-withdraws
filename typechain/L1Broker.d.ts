@@ -2,160 +2,314 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { EventData, PastEventOptions } from "web3-eth-contract";
+import {
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+} from "ethers";
+import {
+  Contract,
+  ContractTransaction,
+  Overrides,
+  CallOverrides,
+} from "@ethersproject/contracts";
+import { BytesLike } from "@ethersproject/bytes";
+import { Listener, Provider } from "@ethersproject/providers";
+import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-export interface L1BrokerContract extends Truffle.Contract<L1BrokerInstance> {
-  "new"(
-    _messenger: string,
-    _l2Checkpoint: string,
-    _token: string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<L1BrokerInstance>;
+interface L1BrokerInterface extends ethers.utils.Interface {
+  functions: {
+    "l2Checkpoint()": FunctionFragment;
+    "messenger()": FunctionFragment;
+    "mintIOU(address,address,address,address,uint256)": FunctionFragment;
+    "redeemIOU(uint256,uint256)": FunctionFragment;
+    "token()": FunctionFragment;
+  };
+
+  encodeFunctionData(
+    functionFragment: "l2Checkpoint",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "messenger", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "mintIOU",
+    values: [string, string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "redeemIOU",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
+
+  decodeFunctionResult(
+    functionFragment: "l2Checkpoint",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "messenger", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mintIOU", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "redeemIOU", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
+
+  events: {};
 }
 
-type AllEvents = never;
+export class L1Broker extends Contract {
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-export interface L1BrokerInstance extends Truffle.ContractInstance {
-  l2Checkpoint(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  on(event: EventFilter | string, listener: Listener): this;
+  once(event: EventFilter | string, listener: Listener): this;
+  addListener(eventName: EventFilter | string, listener: Listener): this;
+  removeAllListeners(eventName: EventFilter | string): this;
+  removeListener(eventName: any, listener: Listener): this;
 
-  messenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  interface: L1BrokerInterface;
 
-  mintIOU: {
-    (
+  functions: {
+    l2Checkpoint(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "l2Checkpoint()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    messenger(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "messenger()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    mintIOU(
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
       l1Bank: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "mintIOU(address,address,address,address,uint256)"(
       recipient: string,
       l1ERC20: string,
       l2ERC20: string,
       l1Bank: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
-    sendTransaction(
-      recipient: string,
-      l1ERC20: string,
-      l2ERC20: string,
-      l1Bank: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      recipient: string,
-      l1ERC20: string,
-      l2ERC20: string,
-      l1Bank: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    redeemIOU(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "redeemIOU(uint256,uint256)"(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    token(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
+
+    "token()"(
+      overrides?: CallOverrides
+    ): Promise<{
+      0: string;
+    }>;
   };
 
-  redeemIOU: {
-    (
-      id: number | BN | string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      id: number | BN | string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
+  l2Checkpoint(overrides?: CallOverrides): Promise<string>;
+
+  "l2Checkpoint()"(overrides?: CallOverrides): Promise<string>;
+
+  messenger(overrides?: CallOverrides): Promise<string>;
+
+  "messenger()"(overrides?: CallOverrides): Promise<string>;
+
+  mintIOU(
+    recipient: string,
+    l1ERC20: string,
+    l2ERC20: string,
+    l1Bank: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "mintIOU(address,address,address,address,uint256)"(
+    recipient: string,
+    l1ERC20: string,
+    l2ERC20: string,
+    l1Bank: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  redeemIOU(
+    id: BigNumberish,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "redeemIOU(uint256,uint256)"(
+    id: BigNumberish,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  token(overrides?: CallOverrides): Promise<string>;
+
+  "token()"(overrides?: CallOverrides): Promise<string>;
+
+  callStatic: {
+    l2Checkpoint(overrides?: CallOverrides): Promise<string>;
+
+    "l2Checkpoint()"(overrides?: CallOverrides): Promise<string>;
+
+    messenger(overrides?: CallOverrides): Promise<string>;
+
+    "messenger()"(overrides?: CallOverrides): Promise<string>;
+
+    mintIOU(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "mintIOU(address,address,address,address,uint256)"(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    redeemIOU(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<void>;
-    sendTransaction(
-      id: number | BN | string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      id: number | BN | string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+
+    "redeemIOU(uint256,uint256)"(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    token(overrides?: CallOverrides): Promise<string>;
+
+    "token()"(overrides?: CallOverrides): Promise<string>;
   };
 
-  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  filters: {};
 
-  methods: {
-    l2Checkpoint(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  estimateGas: {
+    l2Checkpoint(overrides?: CallOverrides): Promise<BigNumber>;
 
-    messenger(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    "l2Checkpoint()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    mintIOU: {
-      (
-        recipient: string,
-        l1ERC20: string,
-        l2ERC20: string,
-        l1Bank: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        recipient: string,
-        l1ERC20: string,
-        l2ERC20: string,
-        l1Bank: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<BN>;
-      sendTransaction(
-        recipient: string,
-        l1ERC20: string,
-        l2ERC20: string,
-        l1Bank: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        recipient: string,
-        l1ERC20: string,
-        l2ERC20: string,
-        l1Bank: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    messenger(overrides?: CallOverrides): Promise<BigNumber>;
 
-    redeemIOU: {
-      (
-        id: number | BN | string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        id: number | BN | string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        id: number | BN | string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        id: number | BN | string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    "messenger()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    token(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    mintIOU(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "mintIOU(address,address,address,address,uint256)"(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    redeemIOU(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "redeemIOU(uint256,uint256)"(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    token(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "token()"(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
-  getPastEvents(event: string): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    options: PastEventOptions,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
-  getPastEvents(event: string, options: PastEventOptions): Promise<EventData[]>;
-  getPastEvents(
-    event: string,
-    callback: (error: Error, event: EventData) => void
-  ): Promise<EventData[]>;
+  populateTransaction: {
+    l2Checkpoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "l2Checkpoint()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    messenger(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "messenger()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    mintIOU(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "mintIOU(address,address,address,address,uint256)"(
+      recipient: string,
+      l1ERC20: string,
+      l2ERC20: string,
+      l1Bank: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    redeemIOU(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "redeemIOU(uint256,uint256)"(
+      id: BigNumberish,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "token()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+  };
 }
