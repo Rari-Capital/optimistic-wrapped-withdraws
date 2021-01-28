@@ -86,7 +86,7 @@ contract L1Broker {
         // Get the metadata we need to redeem.
         (address l1ERC20, , address l1Bank) = token.metadata(id);
 
-        // Redeem underlying. This will revert if the timelock has not expired as the tokens will not be approved to the broker until the message it relayed after the timelock.
+        // Redeem underlying. This will revert if the timelock has not expired as the tokens will not be approved to the broker until the message is relayed after the timelock.
         IL2WithdrawableERC20(l1ERC20).safeTransferFrom(
             l1Bank,
             msg.sender,
