@@ -12,8 +12,8 @@ import "hardhat-typechain";
 import "hardhat-gas-reporter";
 import { removeConsoleLog } from "hardhat-preprocessor";
 
-import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-waffle";
 
 // Optimism plugins:
 import "@eth-optimism/plugins/hardhat/compiler";
