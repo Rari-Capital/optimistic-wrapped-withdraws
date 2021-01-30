@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity 0.7.3;
+pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 

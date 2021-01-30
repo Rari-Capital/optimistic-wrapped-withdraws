@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity 0.7.3;
+pragma solidity ^0.7.3;
 
 import "./L2Checkpoint.sol";
 import "./L1OptimismWithdraw.sol";
