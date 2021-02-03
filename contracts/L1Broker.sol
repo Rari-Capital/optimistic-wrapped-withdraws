@@ -9,7 +9,7 @@ import "./interfaces/IL2WithdrawableERC20.sol";
 /// @title [L1] Contract that responds to messages from the L2Checkpoint to mint withdrawal ERC1155 subtokens. It also allows uesrs on L2 to redeem them for the L1 tokens after the waiting period is up.
 /// @dev You need to deploy a L2Checkpoint contract that will be authorized to send messages to this contract.
 contract L1Broker {
-    // using SafeERC20 for IL2WithdrawableERC20;
+    using SafeERC20 for IL2WithdrawableERC20;
 
     /// @notice The messenger that is authorized to relay messages from L2 -> L1. This messenger should have little/0 waiting period.
     L1InstantCrossDomainMessenger public messenger;
@@ -87,6 +87,10 @@ contract L1Broker {
         (address l1ERC20, , address l1Bank) = token.metadata(id);
 
         // Redeem underlying. This will revert if the timelock has not expired as the tokens will not be approved to the broker until the message is relayed after the timelock.
-        IL2WithdrawableERC20(l1ERC20).transferFrom(l1Bank, msg.sender, amount);
+        IL2WithdrawableERC20(l1ERC20).safeTransferFrom(
+            l1Bank,
+            msg.sender,
+            amount
+        );
     }
 }

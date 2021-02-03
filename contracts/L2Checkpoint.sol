@@ -7,13 +7,13 @@ import {
     iOVM_BaseCrossDomainMessenger
 } from "@eth-optimism/contracts/build/contracts/iOVM/bridge/iOVM_BaseCrossDomainMessenger.sol";
 
-// import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title [L2] Contract for withdrawing an ERC20 and minting an ERC1155 as an IOU on L1.
 /// @dev You need to deploy a custom CrossDomainMessenger with no/little delay to mint the IOU ERC1155 on L2 quickly.
 contract L2Checkpoint is ReentrancyGuard {
-    // using SafeERC20 for IL2WithdrawableERC20;
+    using SafeERC20 for IL2WithdrawableERC20;
 
     /// @notice The cross domain messenger used to mint the IOU ERC1155 on L1 quickly.
     iOVM_BaseCrossDomainMessenger public minterMessenger;
@@ -43,7 +43,7 @@ contract L2Checkpoint is ReentrancyGuard {
         address recipient
     ) public nonReentrant {
         // Take control of their token by transfering it to this contract.
-        l2Token.transferFrom(msg.sender, address(this), amount);
+        l2Token.safeTransferFrom(msg.sender, address(this), amount);
 
         // Call the withdraw method which should burn the token and send a L1 message to approve the underlying tokens to our L1Broker contract!
         address l1Bank =
